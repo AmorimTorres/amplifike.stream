@@ -1,6 +1,6 @@
 # MusicStreamer 🎵
 
-Projeto prático de uma plataforma de streaming de música desenvolvido para a disciplina de **Desenvolvimento de Sistemas com .NET** do Instituto INFNET.
+Projeto prático de uma plataforma de streaming de música desenvolvido para a disciplina de **Desenvolvimento de Sistemas com .NET - Sistemas Web com ASP .NET** do Instituto INFNET.
 
 ---
 
