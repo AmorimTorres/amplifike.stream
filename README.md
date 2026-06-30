@@ -16,7 +16,7 @@ Siga os passos abaixo para compilar, configurar o banco de dados e rodar a API j
 
 ### Passo 1: Clonar o repositório
 ```bash
-git clone <url-do-repositorio>
+git clone https://github.com/AmorimTorres/amplifike.stream
 cd amplifike_musica
 ```
 
