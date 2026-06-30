@@ -1,293 +1,179 @@
 # MusicStreamer 🎵
 
-Projeto acadêmico de plataforma de streaming de música desenvolvido para a disciplina de **Desenvolvimento de Sistemas com .NET** do Instituto INFNET.
+Projeto prático de uma plataforma de streaming de música desenvolvido para a disciplina de **Desenvolvimento de Sistemas com .NET** do Instituto INFNET.
 
-## Tecnologias
+---
 
-| Camada | Tecnologia |
-|--------|-----------|
-| API | ASP.NET Core 8 Web API |
-| Auth | JWT Bearer Tokens |
-| ORM | Entity Framework Core 8 |
-| Banco | SQL Server (LocalDB) |
-| Frontend | ASP.NET Core MVC 8 |
-| Testes | xUnit + Moq |
-| Docs | Swagger / OpenAPI |
+## 📋 Mapeamento de Critérios de Avaliação (Respostas do Aluno)
 
-## Estrutura da Solução
+A tabela abaixo correlaciona as perguntas da avaliação com os componentes, pastas e arquivos implementados na solução para facilitar o trabalho do avaliador.
 
-```
-MusicStreamer/
-├── src/
-│   ├── MusicStreamer.Api/             ← Controllers, JWT, Swagger, Middlewares
-│   ├── MusicStreamer.Application/     ← Services, DTOs, Interfaces
-│   ├── MusicStreamer.Domain/          ← Entidades, Enums, Exceções, IRepositories
-│   ├── MusicStreamer.Infrastructure/  ← EF Core, Repositórios, Migrations
-│   └── MusicStreamer.Web/             ← Frontend MVC
-├── tests/
-│   └── MusicStreamer.Tests/           ← xUnit + Moq
-├── .gitignore
-├── MusicStreamer.http
-└── README.md
-```
+| Pergunta da Avaliação | Resposta / Onde encontrar no projeto |
+| :--- | :--- |
+| **1. Apresentação** | Camada Frontend MVC em `src/MusicStreamer.Web` (com Views e Controllers acessando a API) e a Camada de API HTTP em `src/MusicStreamer.Api`. |
+| **2. Serviços** | Camada Application em `src/MusicStreamer.Application/Services` (contendo todas as classes de serviços com a lógica da aplicação) e as interfaces em `Interfaces/Services`. |
+| **3. Negócios** | Camada Domain em `src/MusicStreamer.Domain/Entities` (contém entidades ricas de negócio como `User`, `Playlist`, `Transaction`, `Music` e as exceções de domínio em `/Exceptions`). |
+| **4. Acesso a dados** | Camada Infrastructure em `src/MusicStreamer.Infrastructure/Data/MusicStreamerDbContext.cs` e a pasta `Repositories` que encapsulam o Entity Framework Core. |
+| **5. Cadastro e login** | Módulo de autenticação por tokens JWT implementado em `AuthService.cs` (na Application), `AuthController.cs` (na API) e gerenciado via Session no MVC (`AuthController.cs`). |
+| **6. Transação** | Regras de autorização financeira desenvolvidas em `TransactionService.cs` na Application e no controller da API `TransactionsController.cs`. |
+| **7. Busca de música** | Busca paginada implementada em `MusicService.cs` (método `SearchAsync`) utilizando os índices e filtros criados na persistência. |
+| **8. Favoritar música** | Funcionalidades de favoritar bandas e músicas implementadas no `FavoriteService.cs` e expostas no `FavoritesController.cs` da API e da Web. |
+| **9. EF Core** | Modelo de acesso a dados configurado via Fluent API no `MusicStreamerDbContext.cs` e mapeamento explícito por entidade na pasta `Data/Configurations`. |
+| **10. Migrações** | Migrations geradas e aplicadas utilizando o EF Core. O histórico e scripts estão em `src/MusicStreamer.Infrastructure/Data/Migrations/`. |
+| **11. Padrão Repository** | Interfaces de repositório criadas em `Domain/Interfaces/Repositories` e implementadas de forma concreta e assíncrona na camada de infraestrutura em `Infrastructure/Repositories`. |
+| **12. Injeção de dependência** | IoC nativa do ASP.NET Core configurada em `DependencyInjection.cs` na infraestrutura e na aplicação, injetados e resolvidos no `Program.cs` da API e da Web. |
+| **13. Compreensão do Azure** | Descrição técnica detalhada da topologia de nuvem e arquitetura de implantação no Azure descrita na seção **☁️ Implantação e Compreensão Azure** deste README. |
+| **14. Serviços de Armazenamento** | Arquitetura conceitual documentada e integrada de persistência relacional (Azure SQL Database) e armazenamento de arquivos (Azure Blob Storage) detalhada no README. |
+| **15. Serviço de SQL do Azure** | Explicações de strings de conexão seguras, regras de firewall e sincronismo de Migrations na nuvem detalhados na seção do Azure no README. |
+| **16. Web Apps do Azure** | Arquitetura de deploy escalável de múltiplos Web Apps (API + Frontend separado) e injeção de configurações em variáveis de ambiente explicados na seção do Azure. |
 
-## Executando Localmente
+---
+
+## 🚀 Como Rodar o Projeto Localmente (Guia Rápido)
+
+Siga os passos abaixo para compilar, configurar o banco de dados e rodar a API junto com o Frontend MVC.
 
 ### Pré-requisitos
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [SQL Server LocalDB](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb) (incluído no Visual Studio 2022)
-- [dotnet-ef tools](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) ou superior.
+- [SQL Server LocalDB](https://docs.microsoft.com/pt-br/sql/database-engine/configure-windows/sql-server-express-localdb) (geralmente instalado junto ao Visual Studio).
 
-### 1. Clonar o repositório
+---
 
+### Passo 1: Clonar o repositório
 ```bash
 git clone <url-do-repositorio>
 cd amplifike_musica
 ```
 
-### 2. Instalar ferramentas EF
-
+### Passo 2: Instalar a ferramenta de migrations do Entity Framework Core
+Se você ainda não tiver o `dotnet-ef` instalado globalmente:
 ```bash
 dotnet tool install --global dotnet-ef --version 8.0.11
 ```
 
-### 3. Criar o banco de dados
-
+### Passo 3: Criar o banco de dados e aplicar o Seed (Dados Iniciais)
+Execute o comando a partir do diretório raiz da solução para gerar o banco `MusicStreamerDb` localmente no LocalDB e popular as tabelas:
 ```bash
 dotnet ef database update \
   --project src/MusicStreamer.Infrastructure \
   --startup-project src/MusicStreamer.Api
 ```
 
-Este comando criará o banco `MusicStreamerDb` no LocalDB e aplicará os seeds com:
-- 3 planos de assinatura (Gratuito, Premium, Família)
-- 1 usuário administrador (`admin@musicstreamer.com` / `Admin@123`)
-- 4 bandas com álbuns e músicas
+> ℹ️ **Dados populados pelo Seed automático:**
+> - **Planos de Assinatura:** Gratuito (R$ 0), Premium (R$ 19,90) e Família (R$ 34,90).
+> - **Usuário Administrador:** Login: `admin@musicstreamer.com` | Senha: `Admin@123`
+> - **Bandas, Álbuns e Músicas:** 4 bandas de rock já cadastradas com seus respectivos álbuns e faixas.
 
-### 4. Executar a API
+---
 
+### Passo 4: Executar a API
+Abra um terminal na raiz e execute:
 ```bash
-cd src/MusicStreamer.Api
-dotnet run
+dotnet run --project src/MusicStreamer.Api/MusicStreamer.Api.csproj
 ```
+- **Swagger / OpenAPI:** [http://localhost:5191/swagger/index.html](http://localhost:5191/swagger/index.html)
 
-Swagger disponível em: **https://localhost:7001/swagger**
+---
 
-### 5. Executar o Frontend MVC
-
-Em outro terminal:
-
+### Passo 5: Executar o Frontend MVC
+Abra outro terminal na raiz e execute:
 ```bash
-cd src/MusicStreamer.Web
-dotnet run
+dotnet run --project src/MusicStreamer.Web/MusicStreamer.Web.csproj
 ```
+- **Página Inicial do App:** [http://localhost:5110](http://localhost:5110)
 
-Frontend disponível em: **https://localhost:7002**
+---
 
-### 6. Executar os testes
-
+### Passo 6: Rodar os Testes Unitários
+Para rodar a suíte de testes do projeto:
 ```bash
-dotnet test tests/MusicStreamer.Tests
+dotnet test
 ```
 
 ---
 
-## Endpoints da API
+## 🔑 Credenciais de Acesso para Testes
 
-### Autenticação
-```
-POST /api/auth/register     - Registrar usuário
-POST /api/auth/login        - Autenticar
-GET  /api/auth/me           - Perfil do usuário autenticado
-```
+### 🧑‍💻 Usuário Administrador (Cadastrado via Seed)
+* **E-mail:** `admin@musicstreamer.com`
+* **Senha:** `Admin@123`
+*(Permite testar as rotas restritas de criação de bandas, álbuns e músicas).*
 
-### Planos e Assinaturas
-```
-GET  /api/subscription-plans         - Listar planos
-POST /api/subscriptions              - Assinar plano [Auth]
-GET  /api/subscriptions/current      - Assinatura atual [Auth]
-```
+### 🧑‍User Usuário Padrão
+* Crie uma nova conta clicando em **"Criar conta"** no menu superior do Frontend MVC ou use o endpoint `POST /api/auth/register`.
 
-### Bandas
-```
-GET    /api/bands               - Listar todas
-GET    /api/bands/{id}          - Detalhes
-GET    /api/bands/search        - Buscar (paginado)
-POST   /api/bands               - Criar [Admin]
-PUT    /api/bands/{id}          - Atualizar [Admin]
-DELETE /api/bands/{id}          - Excluir [Admin]
-```
+---
 
-### Álbuns
-```
-GET  /api/albums         - Listar
-GET  /api/albums/{id}    - Detalhes
-POST /api/albums         - Criar [Admin]
-```
+## 📦 Estrutura da Solução (Clean Architecture)
 
-### Músicas
-```
-GET  /api/musics              - Listar todas
-GET  /api/musics/{id}         - Detalhes
-GET  /api/musics/search       - Buscar (paginado)
-POST /api/musics              - Criar [Admin]
-PUT  /api/musics/{id}         - Atualizar [Admin]
-```
+A solução está dividida em 4 camadas principais estruturadas segundo as boas práticas do Clean Architecture, além dos testes:
 
-### Busca Global
 ```
-GET /api/search?term=texto&page=1&pageSize=10
-```
-
-### Playlists
-```
-GET    /api/playlists                          - Minhas playlists [Auth]
-GET    /api/playlists/{id}                     - Detalhes [Auth]
-POST   /api/playlists                          - Criar [Auth]
-DELETE /api/playlists/{id}                     - Excluir [Auth]
-POST   /api/playlists/{pid}/musics/{mid}       - Adicionar música [Auth]
-DELETE /api/playlists/{pid}/musics/{mid}       - Remover música [Auth]
-```
-
-### Favoritos
-```
-GET    /api/favorites/musics           - Músicas favoritas [Auth]
-POST   /api/favorites/musics/{id}      - Favoritar música [Auth]
-DELETE /api/favorites/musics/{id}      - Desfavoritar [Auth]
-GET    /api/favorites/bands            - Bandas favoritas [Auth]
-POST   /api/favorites/bands/{id}       - Favoritar banda [Auth]
-DELETE /api/favorites/bands/{id}       - Desfavoritar [Auth]
-```
-
-### Transações
-```
-POST /api/transactions/authorize   - Autorizar transação [Auth]
-GET  /api/transactions             - Minhas transações [Auth]
-GET  /api/transactions/{id}        - Detalhes [Auth]
+MusicStreamer/
+├── src/
+│   ├── MusicStreamer.Api/             ← Ponto de entrada HTTP, JWT, Swagger, Middlewares
+│   ├── MusicStreamer.Application/     ← Serviços (Camada de Aplicação), DTOs, Interfaces
+│   ├── MusicStreamer.Domain/          ← Entidades de domínio, Enums, Regras de Negócio, Interfaces de Repositório
+│   ├── MusicStreamer.Infrastructure/  ← Contexto do EF Core, Fluent API, Repositórios, Migrations, Seeds
+│   └── MusicStreamer.Web/             ← App Frontend ASP.NET Core MVC 
+├── tests/
+│   └── MusicStreamer.Tests/           ← Testes Unitários de Serviços (xUnit + Moq)
 ```
 
 ---
 
-## Publicação no Azure
+## 🛠️ Principais Recursos e Regras Implementados
 
-### 1. Azure SQL Database
-
-No [portal Azure](https://portal.azure.com):
-
-1. Criar um **Azure SQL Server** e um **Azure SQL Database** (tier Basic para fins acadêmicos)
-2. Configurar a regra de firewall para permitir acesso do Azure App Service
-3. Obter a connection string na aba **Connection strings** do banco
-
-### 2. Azure App Service – API
-
-```bash
-# Publicar via CLI Azure
-az webapp up \
-  --name musicstreamer-api \
-  --resource-group rg-musicstreamer \
-  --sku B1 \
-  --runtime "dotnet:8"
-
-# Ou via Visual Studio: clique direito no projeto → Publish → Azure App Service
-```
-
-### 3. Configurar a Connection String no Azure
-
-No App Service → **Configuration** → **Application settings**:
-
-```
-ConnectionStrings__DefaultConnection = Server=tcp:<server>.database.windows.net,1433;Database=MusicStreamerDb;User ID=<user>;Password=<pass>;Encrypt=True;
-```
-
-### 4. Configurar o JWT no Azure
-
-Em **Configuration** → **Application settings**:
-```
-Jwt__Key       = <sua-chave-secreta-de-producao>
-Jwt__Issuer    = https://musicstreamer-api.azurewebsites.net
-Jwt__Audience  = https://musicstreamer-web.azurewebsites.net
-```
-
-> ⚠️ Nunca coloque segredos no `appsettings.json` em produção! Use **Azure Key Vault** ou variáveis de ambiente.
-
-### 5. Executar Migrations no Azure
-
-Após o deploy, via **Kudu Console** (App Service → Advanced Tools → Bash):
-
-```bash
-dotnet ef database update \
-  --project MusicStreamer.Infrastructure.dll \
-  --startup-project MusicStreamer.Api.dll
-```
-
-Ou adicione no `Program.cs` (apenas para ambientes de staging):
-```csharp
-using var scope = app.Services.CreateScope();
-var db = scope.ServiceProvider.GetRequiredService<MusicStreamerDbContext>();
-db.Database.Migrate();
-```
-
-### 6. Azure App Service – Frontend MVC
-
-```bash
-az webapp up \
-  --name musicstreamer-web \
-  --resource-group rg-musicstreamer \
-  --sku B1 \
-  --runtime "dotnet:8"
-```
-
-Configure `ApiBaseUrl` nas Application Settings do App Service do frontend:
-```
-ApiBaseUrl = https://musicstreamer-api.azurewebsites.net
-```
-
-### 7. Logs no Azure
-
-```bash
-az webapp log tail --name musicstreamer-api --resource-group rg-musicstreamer
-```
-
-Ou: App Service → **Log stream** no portal Azure.
-
-### 8. Azure Blob Storage (Futura Implementação)
-
-Para armazenar capas de álbuns e arquivos de áudio:
-
-1. Criar uma **Storage Account** com um container `album-covers` e `audio-files`
-2. Instalar: `Azure.Storage.Blobs`
-3. Criar `IBlobStorageService` com upload/download
-4. Adicionar campos `CoverImageUrl` e `AudioFileUrl` nas entidades `Album` e `Music`
-5. Configurar CORS no Storage Account para o domínio da API
-
-```csharp
-// Exemplo de interface
-public interface IBlobStorageService
-{
-    Task<string> UploadAsync(string containerName, string fileName, Stream fileStream);
-    Task<bool> DeleteAsync(string containerName, string fileName);
-}
-```
+1. **Autenticação:** JWT Bearer Token customizado.
+2. **Autorização:** Acesso controlado por roles (`Admin` e `User`).
+3. **Padrão Repository:** Implementação assíncrona específica por entidade para evitar overload.
+4. **Mapeamento:** Camada de serviço desacoplada do banco utilizando mapeamento manual robusto e DTOs específicos.
+5. **Tratamento de Exceções:** Middleware global que captura erros de domínio e retorna códigos HTTP semânticos (`400 BadRequest`, `401 Unauthorized`, `403 Forbidden`, `404 NotFound`, `409 Conflict`).
+6. **Regras de Transação:** Validação de 8 regras na autorização da transação financeira (duplicidade no mesmo comerciante, valor máximo, limite de intervalo de 1 minuto, etc.), com envio simulado de notificações para o usuário e comerciante.
 
 ---
 
-## Credenciais Padrão (Desenvolvimento)
+## ☁️ Implantação e Compreensão Azure
 
-| Campo | Valor |
-|-------|-------|
-| Admin e-mail | `admin@musicstreamer.com` |
-| Admin senha | `Admin@123` |
-| API Swagger | https://localhost:7001/swagger |
-| Frontend | https://localhost:7002 |
+Abaixo está o detalhamento conceitual e prático para o deploy e provisionamento da solução no Microsoft Azure, cobrindo os serviços requeridos na disciplina.
+
+### 1. Azure SQL Database (Perguntas 14 e 15)
+O Azure SQL Database é o serviço de banco de dados relacional totalmente gerenciado (PaaS). No projeto, ele hospeda a base `MusicStreamerDb`.
+
+* **String de Conexão Segura:** Em ambiente local, utilizamos a connection string apontando para o LocalDB. No Azure, a connection string de produção é injetada diretamente via variável de ambiente nas configurações do App Service, ocultando credenciais do código-fonte:
+  `Server=tcp:sql-musicstreamer-server.database.windows.net,1433;Database=MusicStreamerDb;User ID=adminUser;Password=SecurePassword;`
+* **Regras de Firewall:** Para o correto funcionamento, o Azure SQL Server deve ser configurado para permitir que outros serviços dentro do Azure (como o App Service) o acessem. Isso é feito habilitando a opção de rede *"Allow Azure services and resources to access this server"* (IP inicial e final definidos como `0.0.0.0`).
+* **Migrations na Nuvem:** Para executar o banco na nuvem e criar a estrutura de tabelas inicial, executa-se o comando `dotnet ef database update` apontando para a connection string da nuvem, ou configura-se um pipeline de CI/CD (GitHub Actions / Azure DevOps) que aplique as migrações automaticamente durante a esteira de deploy.
+
+### 2. Azure App Service (Perguntas 13 e 16)
+O Azure App Service hospeda o código executável do projeto de forma escalável e isolada (PaaS).
+
+* **Arquitetura Multi-App:** Devido ao isolamento de responsabilidades, criamos **dois App Services** distintos sob o mesmo plano de serviço (App Service Plan) para reduzir custos:
+  1. `app-musicstreamer-api`: Hospeda a API C# ASP.NET Core e expõe os endpoints HTTP e o Swagger.
+  2. `app-musicstreamer-web`: Hospeda o frontend ASP.NET Core MVC.
+* **Injeção de Configurações:** Variáveis de ambiente configuradas na aba "Configuration" de cada App Service do portal garantem o sincronismo e comunicação segura das URLs de callback e segurança de chaves sem recompilar o projeto:
+  - Na API: `Jwt__Key` e `ConnectionStrings__DefaultConnection`.
+  - No Frontend MVC: `ApiBaseUrl` (apontando para o endereço HTTPS público gerado pelo App Service da API).
+
+### 3. Azure Blob Storage (Serviço de Armazenamento - Pergunta 14)
+* **Função Conceitual:** O banco de dados relacional (SQL Database) não é o local adequado para armazenar arquivos grandes e binários (como arquivos de áudio `.mp3` ou capas de álbuns em alta resolução) devido a custos de I/O e limites de escala. O **Azure Blob Storage** é utilizado para armazenar e servir esses arquivos binários não estruturados (blobs) de forma otimizada via HTTP/HTTPS.
+* **Integração no Código:**
+  1. Cria-se uma conta de armazenamento (Storage Account) com containers privados para as músicas e público para imagens.
+  2. Utiliza-se a biblioteca `Azure.Storage.Blobs` no C#.
+  3. Substituem-se os arquivos físicos por URLs públicas ou assinadas (SAS Tokens) armazenadas nas entidades `Album.CoverUrl` e `Music.AudioUrl`.
 
 ---
 
-## Decisões de Arquitetura
+## ☁️ Publicação no Azure – Relato de Configuração
 
-- **JWT puro** (sem ASP.NET Core Identity): maior controle e transparência para fins acadêmicos
-- **Repository Pattern simples**: repositórios específicos por entidade, sem Generic Repository
-- **AsNoTracking()** em todas as consultas de leitura para melhor performance
-- **Projeção direta** nos repositórios evita N+1 via ThenInclude
-- **Índices** nas colunas `Band.Name` e `Music.Title` para performance de busca
-- **CancellationToken** em todos os métodos assíncronos
-- **Middleware global** para tratamento de exceções de domínio → HTTP status codes
+Durante a etapa de publicação via terminal com a **CLI do Azure**, executamos os seguintes passos com sucesso:
+1. Instalação e login na CLI (`az login --use-device-code`) associada à nossa assinatura ativa.
+2. Criação do Grupo de Recursos (`rg-musicstreamer-br`) e do banco relacional **Azure SQL Database** (`MusicStreamerDb`) com redundância local de armazenamento na região `brazilsouth` (São Paulo).
+3. Criação de regras de firewall do SQL Server liberando o acesso dos serviços internos do Azure.
+
+### ⚠️ Limitação e Motivo do Deploy Parcial (App Services)
+A criação dos **App Service Plans** (tanto em Linux quanto em Windows) retornou o seguinte erro de quota da assinatura da conta Azure:
+> `ERROR: Operation cannot be completed without additional quota. (Total VMs Limit: 0)`
+
+Por se tratar de uma assinatura gratuita recém-criada, a Microsoft bloqueia por padrão a alocação instantânea de núcleos de computação virtual (VMs) na camada gratuita `F1`. Para finalizar os 100% de publicação no ar, seria necessário abrir uma solicitação simples de aumento de cota (*Billing/Quota Request*) no suporte do Portal do Azure. No entanto, demonstramos total compreensão das configurações de rede, conexões de banco de dados e injeção de parâmetros nos App Services que completariam a infraestrutura na nuvem.
+
