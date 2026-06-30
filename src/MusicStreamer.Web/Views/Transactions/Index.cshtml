@@ -1,0 +1,58 @@
+@using System.Text.Json
+@model System.Text.Json.JsonElement[]
+@{
+    ViewData["Title"] = "Minhas Transações";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>💳 Minhas Transações</h2>
+    <a asp-controller="Transactions" asp-action="Authorize" class="btn btn-primary">+ Nova Transação</a>
+</div>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Nenhuma transação registrada ainda.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-dark table-hover">
+            <thead>
+                <tr>
+                    <th>Comerciante</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th>Data</th>
+                    <th>Motivo negação</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in Model)
+                {
+                    var merchant = t.TryGetProperty("merchant", out var m) ? m.GetString() : "";
+                    var amount = t.TryGetProperty("amount", out var a) ? a.GetDecimal() : 0;
+                    var status = t.TryGetProperty("status", out var s) ? s.GetString() : "";
+                    var requestedAt = t.TryGetProperty("requestedAt", out var r) ? r.GetString() : "";
+                    var denial = t.TryGetProperty("denialReason", out var d) && d.ValueKind != JsonValueKind.Null ? d.GetString() : "-";
+
+                    <tr>
+                        <td>@merchant</td>
+                        <td>R$ @amount.ToString("N2")</td>
+                        <td>
+                            @if (status == "Authorized")
+                            {
+                                <span class="badge bg-success">✅ Autorizada</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">❌ Negada</span>
+                            }
+                        </td>
+                        <td class="text-muted small">@requestedAt</td>
+                        <td class="text-muted small">@denial</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

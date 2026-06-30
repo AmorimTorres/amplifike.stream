@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "Autorizar Transação";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>💳 Autorizar Transação</h4>
+            </div>
+            <div class="card-body">
+                <form asp-controller="Transactions" asp-action="Authorize" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Comerciante</label>
+                        <input type="text" name="merchant" class="form-control" placeholder="Ex: Spotify Premium" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Valor (R$)</label>
+                        <input type="number" name="amount" class="form-control" step="0.01" min="0.01" max="10000" placeholder="0.00" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Autorizar Transação</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,224 @@
+### MusicStreamer API – Exemplos de Requisições
+### Base URL: https://localhost:7001
+
+### ─── AUTH ───────────────────────────────────────────────
+
+### 1. Registrar usuário
+POST https://localhost:7001/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "João Silva",
+    "email": "joao@teste.com",
+    "password": "Senha@123"
+}
+
+###
+
+### 2. Login (admin)
+# @name login
+POST https://localhost:7001/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@musicstreamer.com",
+    "password": "Admin@123"
+}
+
+###
+
+### 3. Perfil do usuário autenticado
+GET https://localhost:7001/api/auth/me
+Authorization: Bearer {{login.response.body.$.token}}
+
+###
+
+### ─── BANDAS ──────────────────────────────────────────────
+
+### 4. Listar todas as bandas
+GET https://localhost:7001/api/bands
+
+###
+
+### 5. Buscar banda por ID
+GET https://localhost:7001/api/bands/00000000-0000-0000-0000-000000000101
+
+###
+
+### 6. Buscar bandas por termo
+GET https://localhost:7001/api/bands/search?term=metal&page=1&pageSize=10
+
+###
+
+### 7. Criar banda (requer Admin)
+POST https://localhost:7001/api/bands
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{
+    "name": "Led Zeppelin",
+    "description": "Banda britânica de rock formada em 1968."
+}
+
+###
+
+### 8. Atualizar banda
+PUT https://localhost:7001/api/bands/00000000-0000-0000-0000-000000000101
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{
+    "name": "Metallica",
+    "description": "Descrição atualizada da banda."
+}
+
+###
+
+### ─── ÁLBUNS ──────────────────────────────────────────────
+
+### 9. Listar álbuns
+GET https://localhost:7001/api/albums
+
+###
+
+### 10. Criar álbum
+POST https://localhost:7001/api/albums
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{
+    "title": "Master of Puppets",
+    "releaseYear": 1986,
+    "bandId": "00000000-0000-0000-0000-000000000101"
+}
+
+###
+
+### ─── MÚSICAS ──────────────────────────────────────────────
+
+### 11. Listar músicas
+GET https://localhost:7001/api/musics
+
+###
+
+### 12. Buscar músicas
+GET https://localhost:7001/api/musics/search?term=enter&page=1&pageSize=5
+
+###
+
+### 13. Criar música
+POST https://localhost:7001/api/musics
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{
+    "title": "Master of Puppets",
+    "durationInSeconds": 515,
+    "albumId": "00000000-0000-0000-0000-000000000201"
+}
+
+###
+
+### ─── BUSCA GLOBAL ────────────────────────────────────────
+
+### 14. Busca global
+GET https://localhost:7001/api/search?term=nirvana&page=1&pageSize=10
+
+###
+
+### ─── PLANOS ──────────────────────────────────────────────
+
+### 15. Listar planos
+GET https://localhost:7001/api/subscription-plans
+
+###
+
+### 16. Assinar plano (Premium)
+POST https://localhost:7001/api/subscriptions
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{
+    "planId": "00000000-0000-0000-0000-000000000002"
+}
+
+###
+
+### 17. Assinatura atual
+GET https://localhost:7001/api/subscriptions/current
+Authorization: Bearer {{login.response.body.$.token}}
+
+###
+
+### ─── TRANSAÇÕES ──────────────────────────────────────────
+
+### 18. Autorizar transação
+POST https://localhost:7001/api/transactions/authorize
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{
+    "merchant": "Spotify Premium",
+    "amount": 19.90,
+    "requestedAt": "2025-06-01T10:00:00Z"
+}
+
+###
+
+### 19. Listar transações
+GET https://localhost:7001/api/transactions
+Authorization: Bearer {{login.response.body.$.token}}
+
+###
+
+### ─── PLAYLISTS ───────────────────────────────────────────
+
+### 20. Criar playlist
+# @name createPlaylist
+POST https://localhost:7001/api/playlists
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{
+    "name": "Minha Playlist Rock"
+}
+
+###
+
+### 21. Listar playlists
+GET https://localhost:7001/api/playlists
+Authorization: Bearer {{login.response.body.$.token}}
+
+###
+
+### 22. Adicionar música à playlist
+POST https://localhost:7001/api/playlists/{{createPlaylist.response.body.$.id}}/musics/00000000-0000-0000-0001-000000000001
+Authorization: Bearer {{login.response.body.$.token}}
+
+###
+
+### ─── FAVORITOS ───────────────────────────────────────────
+
+### 23. Favoritar música
+POST https://localhost:7001/api/favorites/musics/00000000-0000-0000-0001-000000000001
+Authorization: Bearer {{login.response.body.$.token}}
+
+###
+
+### 24. Listar músicas favoritas
+GET https://localhost:7001/api/favorites/musics
+Authorization: Bearer {{login.response.body.$.token}}
+
+###
+
+### 25. Favoritar banda
+POST https://localhost:7001/api/favorites/bands/00000000-0000-0000-0000-000000000101
+Authorization: Bearer {{login.response.body.$.token}}
+
+###
+
+### 26. Listar bandas favoritas
+GET https://localhost:7001/api/favorites/bands
+Authorization: Bearer {{login.response.body.$.token}}
+
+###

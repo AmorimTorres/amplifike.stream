@@ -1,0 +1,64 @@
+@using System.Text.Json
+@model System.Text.Json.JsonElement[]
+@{
+    ViewData["Title"] = "Minhas Playlists";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📋 Minhas Playlists</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">+ Nova Playlist</button>
+</div>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Nenhuma playlist criada ainda.</p>
+}
+
+<div class="row g-3">
+    @foreach (var p in Model)
+    {
+        var id = p.TryGetProperty("id", out var idProp) ? idProp.GetString() : "";
+        var name = p.TryGetProperty("name", out var n) ? n.GetString() : "";
+        var count = p.TryGetProperty("musicCount", out var mc) ? mc.GetInt32() : 0;
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5>@name</h5>
+                    <p class="text-muted small">@count música(s)</p>
+                    <div class="d-flex gap-2">
+                        <a asp-controller="Playlists" asp-action="Details" asp-route-id="@id" class="btn btn-sm btn-outline-primary">Ver</a>
+                        <form asp-controller="Playlists" asp-action="Delete" method="post">
+                            <input type="hidden" name="id" value="@id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background:#1a1a2e; color:#e0e0e0;">
+            <div class="modal-header">
+                <h5 class="modal-title">Nova Playlist</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-controller="Playlists" asp-action="Create" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nome da Playlist</label>
+                        <input type="text" name="name" class="form-control" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Criar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

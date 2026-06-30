@@ -1,0 +1,44 @@
+@using System.Text.Json
+@model System.Text.Json.JsonElement[]
+@{
+    ViewData["Title"] = "Bandas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>🎸 Bandas</h2>
+    <form asp-controller="Bands" asp-action="Search" method="get" class="d-flex gap-2">
+        <input type="text" name="term" class="form-control" placeholder="Buscar banda..." />
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+</div>
+
+<div class="row g-4">
+    @foreach (var band in Model)
+    {
+        var id = band.TryGetProperty("id", out var idProp) ? idProp.GetString() : "";
+        var name = band.TryGetProperty("name", out var nameProp) ? nameProp.GetString() : "Sem nome";
+        var desc = band.TryGetProperty("description", out var descProp) && descProp.ValueKind != JsonValueKind.Null ? descProp.GetString() : "Sem descrição";
+        var albumCount = band.TryGetProperty("albumCount", out var ac) ? ac.GetInt32() : 0;
+
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">@name</h5>
+                    <p class="card-text text-muted small">@desc</p>
+                    <span class="badge bg-secondary">@albumCount álbum(ns)</span>
+                </div>
+                <div class="card-footer d-flex justify-content-between align-items-center">
+                    <a asp-controller="Bands" asp-action="Details" asp-route-id="@id" class="btn btn-sm btn-outline-primary">Ver detalhes</a>
+                    @if (Context.Session.GetString("JwtToken") != null)
+                    {
+                        <form asp-controller="Favorites" asp-action="AddBand" method="post" style="display:inline">
+                            <input type="hidden" name="bandId" value="@id" />
+                            <input type="hidden" name="returnUrl" value="/Bands" />
+                            <button type="submit" class="btn btn-sm btn-outline-warning">⭐ Favoritar</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

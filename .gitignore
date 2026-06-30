@@ -1,0 +1,62 @@
+## .NET
+*.user
+*.suo
+.vs/
+obj/
+bin/
+*.swp
+.idea/
+
+## NuGet
+packages/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Test Results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+## Build
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio
+.vs
+*.rsuser
+*.sln.docstates
+
+## Rider
+.idea/
+
+## macOS
+.DS_Store
+*.DS_Store
+__MACOSX/
+
+## Environment / Secrets
+appsettings.Development.json
+appsettings.Production.json
+.env
+*.env.local
+secrets.json
+
+## SQL Server
+*.mdf
+*.ldf
+*.ndf
+
+## Migration snapshots (commit them; this just ignores temp)
+*.migration.json

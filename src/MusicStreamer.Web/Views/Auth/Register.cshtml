@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Criar conta";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">🎵 Criar conta</h4>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">@ViewBag.Error</div>
+                }
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Nome completo</label>
+                        <input type="text" name="name" class="form-control" placeholder="Seu nome" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">E-mail</label>
+                        <input type="email" name="email" class="form-control" placeholder="seu@email.com" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Senha</label>
+                        <input type="password" name="password" class="form-control" placeholder="Mínimo 6 caracteres" required minlength="6" />
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Criar conta</button>
+                </form>
+                <hr />
+                <p class="text-center text-muted mb-0">
+                    Já tem conta? <a asp-controller="Auth" asp-action="Login" style="color:#9d4edd;">Entrar</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

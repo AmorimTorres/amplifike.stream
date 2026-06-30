@@ -1,0 +1,54 @@
+@{
+    ViewData["Title"] = "Início";
+}
+
+<div class="text-center py-5">
+    <h1 class="display-4 mb-3" style="color:#9d4edd;">🎵 MusicStreamer</h1>
+    <p class="lead text-muted mb-5">Sua plataforma de streaming de música</p>
+
+    <div class="row justify-content-center g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card h-100 text-center p-4">
+                <div class="fs-1 mb-2">🎸</div>
+                <h5>Bandas</h5>
+                <p class="text-muted small">Explore bandas e álbuns</p>
+                <a asp-controller="Bands" asp-action="Index" class="btn btn-outline-primary btn-sm mt-auto">Ver bandas</a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 text-center p-4">
+                <div class="fs-1 mb-2">🎵</div>
+                <h5>Músicas</h5>
+                <p class="text-muted small">Encontre suas músicas favoritas</p>
+                <a asp-controller="Musics" asp-action="Index" class="btn btn-outline-primary btn-sm mt-auto">Ver músicas</a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 text-center p-4">
+                <div class="fs-1 mb-2">💎</div>
+                <h5>Planos</h5>
+                <p class="text-muted small">Escolha o melhor plano para você</p>
+                <a asp-controller="Subscriptions" asp-action="Index" class="btn btn-outline-primary btn-sm mt-auto">Ver planos</a>
+            </div>
+        </div>
+        @if (Context.Session.GetString("JwtToken") != null)
+        {
+            <div class="col-md-3">
+                <div class="card h-100 text-center p-4">
+                    <div class="fs-1 mb-2">📋</div>
+                    <h5>Minhas Playlists</h5>
+                    <p class="text-muted small">Organize suas músicas</p>
+                    <a asp-controller="Playlists" asp-action="Index" class="btn btn-outline-primary btn-sm mt-auto">Ver playlists</a>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (Context.Session.GetString("JwtToken") == null)
+    {
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-controller="Auth" asp-action="Register" class="btn btn-primary btn-lg px-5">Criar conta grátis</a>
+            <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-primary btn-lg px-5">Entrar</a>
+        </div>
+    }
+</div>

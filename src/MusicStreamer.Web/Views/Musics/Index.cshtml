@@ -1,0 +1,54 @@
+@using System.Text.Json
+@model System.Text.Json.JsonElement[]
+@{
+    ViewData["Title"] = "Músicas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>🎵 Músicas</h2>
+    <form asp-controller="Musics" asp-action="Search" method="get" class="d-flex gap-2">
+        <input type="text" name="term" class="form-control" placeholder="Buscar música..." />
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-dark table-hover">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Álbum</th>
+                <th>Banda</th>
+                <th>Duração</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var music in Model)
+            {
+                var id = music.TryGetProperty("id", out var idProp) ? idProp.GetString() : "";
+                var title = music.TryGetProperty("title", out var t) ? t.GetString() : "";
+                var album = music.TryGetProperty("albumTitle", out var at) ? at.GetString() : "";
+                var band = music.TryGetProperty("bandName", out var bn) ? bn.GetString() : "";
+                var dur = music.TryGetProperty("formattedDuration", out var d) ? d.GetString() : "";
+
+                <tr>
+                    <td>@title</td>
+                    <td class="text-muted">@album</td>
+                    <td class="text-muted">@band</td>
+                    <td>@dur</td>
+                    <td>
+                        @if (Context.Session.GetString("JwtToken") != null)
+                        {
+                            <form asp-controller="Favorites" asp-action="AddMusic" method="post" style="display:inline">
+                                <input type="hidden" name="musicId" value="@id" />
+                                <input type="hidden" name="returnUrl" value="/Musics" />
+                                <button type="submit" class="btn btn-sm btn-outline-warning">⭐</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

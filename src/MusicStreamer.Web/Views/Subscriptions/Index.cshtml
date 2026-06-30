@@ -1,0 +1,52 @@
+@using System.Text.Json
+@model System.Text.Json.JsonElement[]
+@{
+    ViewData["Title"] = "Planos de Assinatura";
+}
+
+<h2 class="mb-4">💎 Planos de Assinatura</h2>
+
+@if (ViewBag.CurrentSubscription != null)
+{
+    var sub = (JsonElement)ViewBag.CurrentSubscription;
+    var planName = sub.TryGetProperty("planName", out var pn) ? pn.GetString() : "";
+    var daysLeft = sub.TryGetProperty("daysRemaining", out var dr) ? dr.GetInt32() : 0;
+    <div class="alert alert-success mb-4">
+        ✅ Você está no plano <strong>@planName</strong> — @daysLeft dia(s) restante(s)
+    </div>
+}
+
+<div class="row justify-content-center g-4">
+    @foreach (var plan in Model)
+    {
+        var id = plan.TryGetProperty("id", out var idProp) ? idProp.GetString() : "";
+        var name = plan.TryGetProperty("name", out var nameProp) ? nameProp.GetString() : "";
+        var price = plan.TryGetProperty("price", out var priceProp) ? priceProp.GetDecimal() : 0;
+        var duration = plan.TryGetProperty("durationInDays", out var dur) ? dur.GetInt32() : 0;
+
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-header">
+                    <h5 class="mb-0">@name</h5>
+                </div>
+                <div class="card-body">
+                    <h2 class="mb-1" style="color:#9d4edd;">
+                        @if (price == 0) { <text>Grátis</text> } else { <text>R$ @price.ToString("N2")</text> }
+                    </h2>
+                    <p class="text-muted">@duration dias</p>
+                    @if (Context.Session.GetString("JwtToken") != null)
+                    {
+                        <form asp-controller="Subscriptions" asp-action="Subscribe" method="post">
+                            <input type="hidden" name="planId" value="@id" />
+                            <button type="submit" class="btn btn-primary">Assinar</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-primary">Entrar para assinar</a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
